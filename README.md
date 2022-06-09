@@ -15,4 +15,4 @@ To install, simply copy the string from the DOCUI file in this repository and im
 
 ![UI Preview](https://i.imgur.com/POTbdcm.png)
 
-*Review the rest of the respository for WA's, BigWigs profile and plater.
+*I use a series of plater, bigwigs profiles which are part of streamer subscriptions.
