@@ -10,6 +10,15 @@ I have already started making layouts and designs for my UI now, during The War 
 - Platynator profile
 
 
+## Addons
+- Platynator
+- Better Blizzard Frames
+- Masque
+- Masque: Blizzard bars
+- Masque: Onyx
+- Masque: Caith
+
+
 
 ## DPS 1440p Layout
 
