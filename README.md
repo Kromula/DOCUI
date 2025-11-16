@@ -7,6 +7,7 @@ I have already started making layouts and designs for my UI now, during The War 
 - Layouts for Tank/DPS and healers
 - Optimised for 1440p (This is assuming Blizzard add proper scaling into Midnight, if not I have made a 1440p scaling addon I will add here)
 - Layouts and setups for cooldown manager.
+- Platynator profile
 
 
 
