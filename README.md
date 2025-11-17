@@ -3,6 +3,8 @@ My UI for World of Warcraft. With the upcoming Addon Apocolypse I will likely be
 
 I have already started making layouts and designs for my UI now, during The War Within. 
 
+In an ideal world I will be able to recreate my current UI which uses UnhaltedUnitFrames and Plater, as the new stuff coming out is gross. 
+
 ## Features
 - Layouts for Tank/DPS and healers
 - Optimised for 1440p (This is assuming Blizzard add proper scaling into Midnight, if not I have made a 1440p scaling addon I will add here)
