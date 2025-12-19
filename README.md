@@ -9,16 +9,14 @@ In an ideal world I will be able to recreate my current UI which uses UnhaltedUn
 - Layouts for Tank/DPS and healers
 - Optimised for 1440p (This is assuming Blizzard add proper scaling into Midnight, if not I have made a 1440p scaling addon I will add here)
 - Layouts and setups for cooldown manager.
-- Platynator profile
 
 
 ## Addons
-- Platynator
-- Better Blizzard Frames
+- Unhalted UnitFrames
+- Cooldown Manager Tweaks
 - Masque
 - Masque: Blizzard bars
-- Masque: Onyx
-- Masque: Caith
+- Masque: Renaitre (Faded variant)
 
 
 
