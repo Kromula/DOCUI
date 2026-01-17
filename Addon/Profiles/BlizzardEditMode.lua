@@ -32,43 +32,63 @@ function DOCUI.Profiles.BlizzardEditMode:Import()
         return false, "Blizzard_PlayerChoice not loaded yet. Try /reload first."
     end
 
-    -- Method 1: Check if there's an ImportLayout API
-    if C_EditMode.ImportLayout then
-        local success = pcall(function()
-            C_EditMode.ImportLayout(self.layoutData)
-        end)
+    -- Debug: Check what APIs are available
+    print("[DOC UI Debug] Checking Edit Mode APIs...")
+    print("  C_EditMode.ImportLayout:", C_EditMode.ImportLayout and "exists" or "nil")
+    print("  C_EditMode.GetLayouts:", C_EditMode.GetLayouts and "exists" or "nil")
+    print("  C_EditMode.SaveLayouts:", C_EditMode.SaveLayouts and "exists" or "nil")
 
-        if success then
-            return true, "Layout imported successfully!"
-        end
-    end
+    -- Method 1: Try using the import dialog directly
+    if EditModeManagerFrame then
+        print("  EditModeManagerFrame: exists")
 
-    -- Method 2: Check if there's an import from string function
-    if EditModeManagerFrame and EditModeManagerFrame.ImportLayout then
-        local success = pcall(function()
-            EditModeManagerFrame:ImportLayout(self.layoutData)
-        end)
-
-        if success then
-            return true, "Layout imported successfully!"
-        end
-    end
-
-    -- Method 3: Try to import via the import dialog
-    if EditModeManagerFrame and EditModeManagerFrame.importLayoutDialog then
+        -- Try to access the import dialog
         local dialog = EditModeManagerFrame.importLayoutDialog
-        if dialog and dialog.ImportLayout then
-            local success = pcall(function()
-                dialog:ImportLayout(self.layoutData)
+        if dialog then
+            print("  importLayoutDialog: exists")
+
+            -- Try to set the import string and trigger import
+            local success, err = pcall(function()
+                -- Set the import string in the edit box
+                if dialog.editBox then
+                    dialog.editBox:SetText(self.layoutData)
+                end
+
+                -- Try to call the import function
+                if dialog.ImportLayout then
+                    dialog:ImportLayout()
+                elseif dialog.AcceptButton and dialog.AcceptButton:GetScript("OnClick") then
+                    dialog.AcceptButton:GetScript("OnClick")(dialog.AcceptButton)
+                end
             end)
 
             if success then
-                return true, "Layout imported successfully!"
+                -- Check if layout actually exists now
+                C_Timer.After(0.5, function()
+                    if self:LayoutExists() then
+                        print("[DOC UI] Layout verified in Edit Mode!")
+                    else
+                        print("[DOC UI] WARNING: Import appeared to succeed but layout not found!")
+                    end
+                end)
+                return true, "Layout import attempted - checking..."
+            else
+                print("[DOC UI Debug] Import dialog method failed:", err)
             end
+        else
+            print("  importLayoutDialog: nil")
         end
     end
 
-    -- If none of the APIs work, fall back to manual import
+    -- Method 2: Check if C_EditMode has GetLayouts/SaveLayouts
+    -- This would require converting our import string to layout structure
+    if C_EditMode.GetLayouts and C_EditMode.SaveLayouts then
+        print("[DOC UI Debug] GetLayouts/SaveLayouts exist - but we need layout structure, not string")
+        -- TODO: Implement string-to-structure conversion
+        return false, "Import string format not supported. Use manual import."
+    end
+
+    -- If all methods fail
     return false, "Automatic import not available. Please use manual copy-paste method."
 end
 
