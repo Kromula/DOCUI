@@ -1,0 +1,17 @@
+## Interface: 120000, 120001
+## Title: DOC UI
+## Notes: Installer for DOC UI profiles - Blizzard Edit Mode & Unhalted UnitFrames
+## Author: DOC
+## Version: 1.0.0
+## SavedVariables: DOCUIDB
+## X-Category: Interface Enhancements
+
+# Profile Data
+Profiles\BlizzardEditMode.lua
+Profiles\UnhaltedUnitFrames.lua
+
+# Core initialization
+Core\Init.lua
+
+# Main installer
+Installer.lua
