@@ -18,3 +18,80 @@ DOCUI.Profiles.BlizzardEditMode = {
     -- Press ESC → Edit Mode → Import Layout → Paste the string above
     importInstructions = "To import this layout: Press ESC → Edit Mode → Import Layout → Paste the provided string"
 }
+
+-- Programmatic Import Function
+-- This attempts to import the layout directly without manual copy-paste
+function DOCUI.Profiles.BlizzardEditMode:Import()
+    -- Check if Edit Mode APIs are available
+    if not C_EditMode then
+        return false, "Edit Mode API not available. Make sure you're on retail (11.0+)."
+    end
+
+    -- Check if Blizzard_PlayerChoice is loaded (required for Edit Mode)
+    if not C_AddOns.IsAddOnLoaded("Blizzard_PlayerChoice") then
+        return false, "Blizzard_PlayerChoice not loaded yet. Try /reload first."
+    end
+
+    -- Method 1: Check if there's an ImportLayout API
+    if C_EditMode.ImportLayout then
+        local success = pcall(function()
+            C_EditMode.ImportLayout(self.layoutData)
+        end)
+
+        if success then
+            return true, "Layout imported successfully!"
+        end
+    end
+
+    -- Method 2: Check if there's an import from string function
+    if EditModeManagerFrame and EditModeManagerFrame.ImportLayout then
+        local success = pcall(function()
+            EditModeManagerFrame:ImportLayout(self.layoutData)
+        end)
+
+        if success then
+            return true, "Layout imported successfully!"
+        end
+    end
+
+    -- Method 3: Try to import via the import dialog
+    if EditModeManagerFrame and EditModeManagerFrame.importLayoutDialog then
+        local dialog = EditModeManagerFrame.importLayoutDialog
+        if dialog and dialog.ImportLayout then
+            local success = pcall(function()
+                dialog:ImportLayout(self.layoutData)
+            end)
+
+            if success then
+                return true, "Layout imported successfully!"
+            end
+        end
+    end
+
+    -- If none of the APIs work, fall back to manual import
+    return false, "Automatic import not available. Please use manual copy-paste method."
+end
+
+-- Helper function to check if our layout already exists
+function DOCUI.Profiles.BlizzardEditMode:LayoutExists()
+    if not C_EditMode or not C_EditMode.GetLayouts then
+        return false
+    end
+
+    local success, data = pcall(function()
+        return C_EditMode.GetLayouts()
+    end)
+
+    if not success or not data or not data.layouts then
+        return false
+    end
+
+    -- Check if "DOC UI" layout exists
+    for _, layout in ipairs(data.layouts) do
+        if layout.layoutName and layout.layoutName == "DOC UI - DPS 1440p" then
+            return true
+        end
+    end
+
+    return false
+end

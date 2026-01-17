@@ -1,5 +1,5 @@
--- DOC UI - Better Cooldown Manager Profiles
--- This file contains pre-configured cooldown layouts for various specs
+-- DOC UI - Blizzard Cooldown Manager Profiles
+-- This file contains pre-configured spells and abilities layouts for various specs
 
 DOCUI.Profiles = DOCUI.Profiles or {}
 DOCUI.Profiles.CooldownManager = {}

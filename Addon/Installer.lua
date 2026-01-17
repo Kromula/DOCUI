@@ -455,31 +455,66 @@ local function BuildInstallerData()
     pages[pageIndex] = function()
         local f = installerFrame
         f.SubTitle:SetText("Blizzard Edit Mode Layout")
-        f.Desc1:SetText("DOC UI uses Blizzard's built-in Edit Mode .")
-        f.Desc2:SetText("The installer will prepare your layout string. You'll need to manually import it into Edit Mode.")
-        f.Desc3:SetText("Click 'Prepare Layout' to generate the import string.")
+        f.Desc1:SetText("DOC UI uses Blizzard's built-in Edit Mode.")
+        f.Desc2:SetText("We'll attempt to import the layout automatically.")
+        f.Desc3:SetText("Click 'Import Layout' to install automatically, or 'Manual Import' if you prefer.")
 
+        -- Automatic import button
         f.Option1:Show()
         f.Option1:SetScript("OnClick", function()
-            -- Prepare the layout string
             if DOCUI.Profiles and DOCUI.Profiles.BlizzardEditMode then
-                DOCUI.EditModeString = DOCUI.Profiles.BlizzardEditMode.layoutData
-                DOCUIDB.installedProfiles = DOCUIDB.installedProfiles or {}
-                DOCUIDB.installedProfiles["Blizzard Edit Mode"] = {
-                    installed = true,
-                    date = date("%Y-%m-%d %H:%M:%S")
-                }
-                DOCUI.Installer:NextPage()
+                f.Option1:Disable()
+                f.Option1:SetText("Importing...")
+
+                -- Try automatic import
+                local success, message = DOCUI.Profiles.BlizzardEditMode:Import()
+
+                f.Option1:Enable()
+                f.Option1:SetText("Import Layout")
+
+                if success then
+                    -- Success - record and move to next page
+                    DOCUIDB.installedProfiles = DOCUIDB.installedProfiles or {}
+                    DOCUIDB.installedProfiles["Blizzard Edit Mode"] = {
+                        installed = true,
+                        date = date("%Y-%m-%d %H:%M:%S"),
+                        method = "automatic"
+                    }
+                    f.Desc3:SetText("|cff00ff00" .. message .. "|r")
+                    C_Timer.After(1, function()
+                        DOCUI.Installer:NextPage()
+                    end)
+                else
+                    -- Failed - show error and offer manual import
+                    f.Desc3:SetText("|cffffaa00" .. message .. " Use Manual Import instead.|r")
+                end
             end
         end)
-        f.Option1:SetText("Prepare Layout")
+        f.Option1:SetText("Import Layout")
+
+        -- Manual import option
+        f.Option2:Show()
+        f.Option2:SetScript("OnClick", function()
+            -- Prepare for manual import (show string on next page)
+            DOCUI.EditModeString = DOCUI.Profiles.BlizzardEditMode.layoutData
+            DOCUI.EditModeManualImport = true
+            DOCUI.Installer:NextPage()
+        end)
+        f.Option2:SetText("Manual Import")
     end
     stepTitles[pageIndex] = "Layout Selection"
     pageIndex = pageIndex + 1
 
-    -- Page 3: Layout String
+    -- Page 3: Layout String (only shown if manual import was chosen)
     pages[pageIndex] = function()
         local f = installerFrame
+
+        -- If automatic import succeeded, skip this page
+        if not DOCUI.EditModeManualImport then
+            DOCUI.Installer:NextPage()
+            return
+        end
+
         f.SubTitle:SetText("Import Layout String")
         f.Desc1:SetText("The layout string is ready! Follow these steps:")
         f.Desc2:SetText("1. Click in the box below\n2. Press Ctrl+A to select all\n3. Press Ctrl+C to copy\n4. Open Edit Mode (ESC -> Edit Mode)\n5. Click 'Import Layout' and paste (Ctrl+V)")
@@ -513,6 +548,17 @@ local function BuildInstallerData()
             f.LayoutEditBox:SetText(DOCUI.EditModeString)
             f.LayoutEditBox:HighlightText()
         end
+
+        -- Record manual import
+        DOCUIDB.installedProfiles = DOCUIDB.installedProfiles or {}
+        DOCUIDB.installedProfiles["Blizzard Edit Mode"] = {
+            installed = true,
+            date = date("%Y-%m-%d %H:%M:%S"),
+            method = "manual"
+        }
+
+        -- Reset flag for next run
+        DOCUI.EditModeManualImport = false
     end
     stepTitles[pageIndex] = "Import String"
     pageIndex = pageIndex + 1
@@ -580,9 +626,9 @@ local function BuildInstallerData()
         end
 
         f.SubTitle:SetText("Cooldown Manager Layouts")
-        f.Desc1:SetText("DOC UI includes pre-configured Better Cooldown Manager layouts for various specs.")
-        f.Desc2:SetText("Select your spec below to view the import string.")
-        f.Desc3:SetText("You'll need to manually import the string in Better Cooldown Manager.")
+        f.Desc1:SetText("DOC UI includes pre-configured layouts for Blizzard's Cooldown Manager.")
+        f.Desc2:SetText("These strings setup spells and abilities layouts. Select your spec below.")
+        f.Desc3:SetText("You'll need to manually import the string in Blizzard Cooldown Manager.")
 
         if DOCUI.Profiles.CooldownManager and DOCUI.Profiles.CooldownManager.layouts then
             local layouts = DOCUI.Profiles.CooldownManager.layouts
@@ -622,7 +668,7 @@ local function BuildInstallerData()
             end
         end
     end
-    stepTitles[pageIndex] = "Cooldown Manager"
+    stepTitles[pageIndex] = "Cooldown Manager Layouts"
     pageIndex = pageIndex + 1
 
     -- Page 6: Cooldown Manager Import String
@@ -630,7 +676,7 @@ local function BuildInstallerData()
         local f = installerFrame
         f.SubTitle:SetText("Import Cooldown Layout")
         f.Desc1:SetText("The layout string for " .. (DOCUI.SelectedCooldownLayout or "your spec") .. " is ready!")
-        f.Desc2:SetText("1. Click in the box below and press Ctrl+A, then Ctrl+C to copy\n2. Open Better Cooldown Manager settings\n3. Find the Import section and paste (Ctrl+V)")
+        f.Desc2:SetText("1. Click in the box below and press Ctrl+A, then Ctrl+C to copy\n2. Open Blizzard Cooldown Manager settings\n3. Find the Import section and paste (Ctrl+V)")
 
         -- Reuse the edit box
         if not f.LayoutEditBox then
