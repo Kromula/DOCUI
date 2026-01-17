@@ -9,9 +9,10 @@ World of Warcraft UI setup with dedicated installer addon. Optimized for 1440p d
 
 A streamlined installer that imports all DOC UI profiles automatically:
 - ✅ Auto-opens on first login
-- ✅ 5-page guided wizard
+- ✅ 7-page guided wizard
 - ✅ Blizzard Edit Mode layout import
 - ✅ Unhalted UnitFrames profile import
+- ✅ Better Cooldown Manager layouts (spec-based)
 - ✅ `/docui` command to reopen anytime
 
 ### Profile Data
@@ -77,7 +78,8 @@ DOCUI/
 │   │   └── Init.lua
 │   ├── Profiles/
 │   │   ├── BlizzardEditMode.lua
-│   │   └── UnhaltedUnitFrames.lua
+│   │   ├── UnhaltedUnitFrames.lua
+│   │   └── CooldownManager.lua
 │   └── Installer.lua
 ├── Profile Data/                   # Source profiles
 │   ├── BetterCooldownManager Profile
@@ -101,9 +103,11 @@ See [Project.md](Project.md) for current bugs and feature roadmap.
 ## 📝 Version History
 
 ### v0.0.5 (Current - PTR Development)
-- ✅ Working installer with 5-page wizard
+- ✅ Working installer with 7-page wizard
 - ✅ Blizzard Edit Mode profile
 - ✅ Unhalted UnitFrames profile (using UUFG global)
+- ✅ Better Cooldown Manager layouts (Arcane Mage, Balance Druid)
+- ✅ Class-colored spec buttons
 - ✅ First-run detection
 - ✅ Reload UI button on completion
 - 🚧 In development for Midnight expansion
