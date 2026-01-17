@@ -3,7 +3,7 @@
 
 -- Create addon namespace
 DOCUI = DOCUI or {}
-DOCUI.VERSION = "1.0.0"
+DOCUI.VERSION = "0.0.5"
 
 -- Initialize database with defaults
 local function InitializeDatabase()

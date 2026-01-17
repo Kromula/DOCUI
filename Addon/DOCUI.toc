@@ -2,7 +2,7 @@
 ## Title: DOC UI
 ## Notes: Installer for DOC UI profiles - Blizzard Edit Mode & Unhalted UnitFrames
 ## Author: DOC
-## Version: 1.0.0
+## Version: 0.0.5
 ## SavedVariables: DOCUIDB
 ## X-Category: Interface Enhancements
 

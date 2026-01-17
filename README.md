@@ -57,13 +57,60 @@ Pre-configured profiles for supported addons:
 ### DPS 1440p Layout
 <img width="2559" height="1439" alt="DOC UI DPS Layout" src="https://github.com/user-attachments/assets/4a1f0464-1b24-41d1-845d-46dda3bc2a1f" />
 
+## 📚 Documentation
 
-### v0.0.5 (Current)
+Comprehensive guides for developers and contributors:
+
+- **[Project.md](Project.md)** - Feature tracker, bugs, roadmap
+- **[PROFILE_IMPORT_GUIDE.md](PROFILE_IMPORT_GUIDE.md)** - How to add new profile imports
+- **[InstallerAnalysis.md](InstallerAnalysis.md)** - Deep dive into installer architecture
+- **[UUF_TROUBLESHOOTING.md](UUF_TROUBLESHOOTING.md)** - Technical debugging reference
+
+## 🛠️ Development
+
+### Repository Structure
+```
+DOCUI/
+├── Addon/                          # WoW Addon (install this)
+│   ├── DOCUI.toc
+│   ├── Core/
+│   │   └── Init.lua
+│   ├── Profiles/
+│   │   ├── BlizzardEditMode.lua
+│   │   └── UnhaltedUnitFrames.lua
+│   └── Installer.lua
+├── Profile Data/                   # Source profiles
+│   ├── BetterCooldownManager Profile
+│   ├── Unhalted Unitframe Profile
+│   ├── Jundies Platynator Profile
+│   └── Layouts/
+└── Documentation/                  # Developer guides
+    ├── PROFILE_IMPORT_GUIDE.md
+    ├── InstallerAnalysis.md
+    └── Project.md
+```
+
+### Adding New Profiles
+
+See [PROFILE_IMPORT_GUIDE.md](PROFILE_IMPORT_GUIDE.md) for step-by-step instructions on adding profile imports for other addons.
+
+## 🐛 Known Issues
+
+See [Project.md](Project.md) for current bugs and feature roadmap.
+
+## 📝 Version History
+
+### v0.0.5 (Current - PTR Development)
 - ✅ Working installer with 5-page wizard
 - ✅ Blizzard Edit Mode profile
 - ✅ Unhalted UnitFrames profile (using UUFG global)
 - ✅ First-run detection
 - ✅ Reload UI button on completion
+- 🚧 In development for Midnight expansion
+
+### Versioning Strategy
+- **0.x.x** - Development versions (PTR testing)
+- **1.0.0** - Official release for Midnight expansion launch
 
 ## 📄 License
 
