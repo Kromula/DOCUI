@@ -1,6 +1,10 @@
 # Claude Code working directory
 .claude/
 
+# Claude documentation files (except README)
+*.md
+!README.md
+
 # macOS
 .DS_Store
 
