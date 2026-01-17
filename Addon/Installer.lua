@@ -570,7 +570,102 @@ local function BuildInstallerData()
     stepTitles[pageIndex] = "UnitFrames"
     pageIndex = pageIndex + 1
 
-    -- Page 5: Complete
+    -- Page 5: Cooldown Manager Layouts
+    pages[pageIndex] = function()
+        local f = installerFrame
+
+        -- Hide edit box if showing
+        if f.LayoutEditBoxFrame then
+            f.LayoutEditBoxFrame:Hide()
+        end
+
+        f.SubTitle:SetText("Cooldown Manager Layouts")
+        f.Desc1:SetText("DOC UI includes pre-configured Better Cooldown Manager layouts for various specs.")
+        f.Desc2:SetText("Select your spec below to view the import string.")
+        f.Desc3:SetText("You'll need to manually import the string in Better Cooldown Manager.")
+
+        if DOCUI.Profiles.CooldownManager and DOCUI.Profiles.CooldownManager.layouts then
+            local layouts = DOCUI.Profiles.CooldownManager.layouts
+            local numLayouts = #layouts
+
+            -- Show buttons for each layout
+            for i = 1, math.min(numLayouts, 4) do
+                local layout = layouts[i]
+                local button = f["Option"..i]
+
+                button:Show()
+                button:SetText(layout.displayName)
+
+                -- Set class color
+                local r, g, b = DOCUI.Profiles.CooldownManager:GetClassColor(layout.class)
+                if button.bg then
+                    button.bg:SetColorTexture(r * 0.3, g * 0.3, b * 0.3, 0.9)
+                end
+                if button.text then
+                    button.text:SetTextColor(r, g, b)
+                end
+
+                button:SetScript("OnClick", function()
+                    -- Store the selected layout string
+                    DOCUI.CooldownString = layout.importString
+                    DOCUI.SelectedCooldownLayout = layout.displayName
+
+                    -- Record it as prepared
+                    DOCUIDB.installedProfiles = DOCUIDB.installedProfiles or {}
+                    DOCUIDB.installedProfiles["Cooldown Manager - " .. layout.displayName] = {
+                        installed = true,
+                        date = date("%Y-%m-%d %H:%M:%S")
+                    }
+
+                    DOCUI.Installer:NextPage()
+                end)
+            end
+        end
+    end
+    stepTitles[pageIndex] = "Cooldown Manager"
+    pageIndex = pageIndex + 1
+
+    -- Page 6: Cooldown Manager Import String
+    pages[pageIndex] = function()
+        local f = installerFrame
+        f.SubTitle:SetText("Import Cooldown Layout")
+        f.Desc1:SetText("The layout string for " .. (DOCUI.SelectedCooldownLayout or "your spec") .. " is ready!")
+        f.Desc2:SetText("1. Click in the box below and press Ctrl+A, then Ctrl+C to copy\n2. Open Better Cooldown Manager settings\n3. Find the Import section and paste (Ctrl+V)")
+
+        -- Reuse the edit box
+        if not f.LayoutEditBox then
+            local editBoxFrame = CreateFrame("Frame", nil, f, "BackdropTemplate")
+            editBoxFrame:SetSize(500, 120)
+            editBoxFrame:SetPoint("CENTER", f, "CENTER", 0, -30)
+            ApplyBackdrop(editBoxFrame)
+
+            local scrollFrame = CreateFrame("ScrollFrame", nil, editBoxFrame, "UIPanelScrollFrameTemplate")
+            scrollFrame:SetPoint("TOPLEFT", 8, -8)
+            scrollFrame:SetPoint("BOTTOMRIGHT", -28, 8)
+
+            local editBox = CreateFrame("EditBox", nil, scrollFrame)
+            editBox:SetMultiLine(true)
+            editBox:SetFontObject(ChatFontNormal)
+            editBox:SetWidth(460)
+            editBox:SetAutoFocus(false)
+            editBox:SetScript("OnEscapePressed", function(self) self:ClearFocus() end)
+            scrollFrame:SetScrollChild(editBox)
+
+            f.LayoutEditBox = editBox
+            f.LayoutEditBoxFrame = editBoxFrame
+        end
+
+        f.LayoutEditBoxFrame:Show()
+
+        if DOCUI.CooldownString then
+            f.LayoutEditBox:SetText(DOCUI.CooldownString)
+            f.LayoutEditBox:HighlightText()
+        end
+    end
+    stepTitles[pageIndex] = "Import Cooldown"
+    pageIndex = pageIndex + 1
+
+    -- Page 7: Complete
     pages[pageIndex] = function()
         local f = installerFrame
 

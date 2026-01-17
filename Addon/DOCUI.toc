@@ -9,6 +9,7 @@
 # Profile Data
 Profiles\BlizzardEditMode.lua
 Profiles\UnhaltedUnitFrames.lua
+Profiles\CooldownManager.lua
 
 # Core initialization
 Core\Init.lua
