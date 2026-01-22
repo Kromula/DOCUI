@@ -121,6 +121,11 @@ local function ResetPage()
     installerFrame.Desc1:SetText("")
     installerFrame.Desc2:SetText("")
     installerFrame.Desc3:SetText("")
+
+    -- Hide credits frame if it exists
+    if installerFrame.CreditsFrame then
+        installerFrame.CreditsFrame:Hide()
+    end
 end
 
 -- Update progress bar
@@ -560,7 +565,7 @@ local function BuildInstallerData()
         -- Reset flag for next run
         DOCUI.EditModeManualImport = false
     end
-    stepTitles[pageIndex] = "Import String"
+    stepTitles[pageIndex] = "Import Blizzard Layout"
     pageIndex = pageIndex + 1
 
     -- Page 4: Unhalted UnitFrames
@@ -616,7 +621,103 @@ local function BuildInstallerData()
     stepTitles[pageIndex] = "UnitFrames"
     pageIndex = pageIndex + 1
 
-    -- Page 5: Cooldown Manager Layouts
+    -- Page 5: Better Cooldown Manager
+    pages[pageIndex] = function()
+        local f = installerFrame
+
+        f.SubTitle:SetText("Better Cooldown Manager")
+        f.Desc1:SetText("DOC UI includes a complete profile for Better Cooldown Manager.")
+        f.Desc2:SetText("This will import the 'DOC UI' profile into your Better Cooldown Manager addon.")
+        f.Desc3:SetText("Click 'Import Profile' to install, or 'Skip' to continue without BCDM.")
+
+        f.Option1:Show()
+        f.Option1:SetScript("OnClick", function()
+            if DOCUI.Profiles.BetterCooldownManager then
+                -- Disable button while importing
+                f.Option1:Disable()
+                f.Option1:SetText("Importing...")
+
+                -- Import is synchronous, so we only use the return values
+                local success, message = DOCUI.Profiles.BetterCooldownManager:Import()
+
+                -- Re-enable button
+                f.Option1:Enable()
+                f.Option1:SetText("Import Profile")
+
+                if success then
+                    -- Success - record and move to next page
+                    DOCUIDB.installedProfiles = DOCUIDB.installedProfiles or {}
+                    DOCUIDB.installedProfiles["Better Cooldown Manager"] = {
+                        installed = true,
+                        date = date("%Y-%m-%d %H:%M:%S")
+                    }
+                    DOCUI.Installer:NextPage()
+                else
+                    -- Show error
+                    f.Desc3:SetText("|cffff0000Error: " .. message .. "|r")
+                end
+            end
+        end)
+        f.Option1:SetText("Import Profile")
+
+        f.Option2:Show()
+        f.Option2:SetScript("OnClick", function()
+            DOCUI.Installer:NextPage()
+        end)
+        f.Option2:SetText("Skip BCDM")
+    end
+    stepTitles[pageIndex] = "Cooldown Manager"
+    pageIndex = pageIndex + 1
+
+    -- Page 6: Platynator
+    pages[pageIndex] = function()
+        local f = installerFrame
+
+        f.SubTitle:SetText("Platynator (Plater Nameplates)")
+        f.Desc1:SetText("DOC UI includes Jundies' Platynator profile for nameplate styling.")
+        f.Desc2:SetText("This will import the 'Jundies' profile into your Platynator addon.")
+        f.Desc3:SetText("Click 'Import Profile' to install, or 'Skip' to continue without Platynator.")
+
+        f.Option1:Show()
+        f.Option1:SetScript("OnClick", function()
+            if DOCUI.Profiles.Platynator then
+                -- Disable button while importing
+                f.Option1:Disable()
+                f.Option1:SetText("Importing...")
+
+                -- Import is synchronous, so we only use the return values
+                local success, message = DOCUI.Profiles.Platynator:Import()
+
+                -- Re-enable button
+                f.Option1:Enable()
+                f.Option1:SetText("Import Profile")
+
+                if success then
+                    -- Success - record and move to next page
+                    DOCUIDB.installedProfiles = DOCUIDB.installedProfiles or {}
+                    DOCUIDB.installedProfiles["Platynator"] = {
+                        installed = true,
+                        date = date("%Y-%m-%d %H:%M:%S")
+                    }
+                    DOCUI.Installer:NextPage()
+                else
+                    -- Show error
+                    f.Desc3:SetText("|cffff0000Error: " .. message .. "|r")
+                end
+            end
+        end)
+        f.Option1:SetText("Import Profile")
+
+        f.Option2:Show()
+        f.Option2:SetScript("OnClick", function()
+            DOCUI.Installer:NextPage()
+        end)
+        f.Option2:SetText("Skip Platynator")
+    end
+    stepTitles[pageIndex] = "Platynator"
+    pageIndex = pageIndex + 1
+
+    -- Page 7: Cooldown Manager Layouts
     pages[pageIndex] = function()
         local f = installerFrame
 
@@ -671,7 +772,7 @@ local function BuildInstallerData()
     stepTitles[pageIndex] = "Cooldown Manager Layouts"
     pageIndex = pageIndex + 1
 
-    -- Page 6: Cooldown Manager Import String
+    -- Page 8: Cooldown Manager Import String
     pages[pageIndex] = function()
         local f = installerFrame
         f.SubTitle:SetText("Import Cooldown Layout")
@@ -711,7 +812,7 @@ local function BuildInstallerData()
     stepTitles[pageIndex] = "Import Cooldown"
     pageIndex = pageIndex + 1
 
-    -- Page 7: Complete
+    -- Page 9: Complete
     pages[pageIndex] = function()
         local f = installerFrame
 
@@ -724,6 +825,35 @@ local function BuildInstallerData()
         f.Desc1:SetText("DOC UI has been installed successfully!")
         f.Desc2:SetText("To activate all changes, you need to reload your UI.")
         f.Desc3:SetText("You can reopen this installer anytime with |cff00ff00/docui|r")
+
+        -- Create credits frame if it doesn't exist
+        if not f.CreditsFrame then
+            f.CreditsFrame = CreateFrame("Frame", nil, f)
+            f.CreditsFrame:SetSize(540, 100)
+            f.CreditsFrame:SetPoint("CENTER", 0, -60)
+
+            local creditsTitle = f.CreditsFrame:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+            creditsTitle:SetPoint("TOP", 0, 0)
+            creditsTitle:SetText("|cff" .. string.format("%02x%02x%02x", DOC_BLUE[1]*255, DOC_BLUE[2]*255, DOC_BLUE[3]*255) .. "Credits|r")
+            f.CreditsFrame.title = creditsTitle
+
+            local creditsText = f.CreditsFrame:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
+            creditsText:SetPoint("TOP", creditsTitle, "BOTTOM", 0, -8)
+            creditsText:SetWidth(520)
+            creditsText:SetJustifyH("CENTER")
+            creditsText:SetSpacing(2)
+            creditsText:SetText(
+                "|cffaaaaaa" ..
+                "Unhalted - Creator of Unhalted Unit Frames and Better Cooldown Manager\n" ..
+                "Plusmouse - Creator and author of Platynator\n" ..
+                "Jundies - His profile we are using for Platynator\n" ..
+                "Luckyone - UI wizard and inspiration for having a go at my own installer" ..
+                "|r"
+            )
+            f.CreditsFrame.text = creditsText
+        end
+
+        f.CreditsFrame:Show()
 
         -- Reload UI button (primary action)
         f.Option1:Show()

@@ -32,64 +32,57 @@ function DOCUI.Profiles.BlizzardEditMode:Import()
         return false, "Blizzard_PlayerChoice not loaded yet. Try /reload first."
     end
 
-    -- Debug: Check what APIs are available
-    print("[DOC UI Debug] Checking Edit Mode APIs...")
-    print("  C_EditMode.ImportLayout:", C_EditMode.ImportLayout and "exists" or "nil")
-    print("  C_EditMode.GetLayouts:", C_EditMode.GetLayouts and "exists" or "nil")
-    print("  C_EditMode.SaveLayouts:", C_EditMode.SaveLayouts and "exists" or "nil")
+    -- Method: Use EditModeManagerFrame:ImportLayout()
+    -- Based on debug, this is the only available import method
+    if not (EditModeManagerFrame and EditModeManagerFrame.ImportLayout) then
+        return false, "EditModeManagerFrame:ImportLayout not available. Use manual import."
+    end
 
-    -- Method 1: Try using the import dialog directly
-    if EditModeManagerFrame then
-        print("  EditModeManagerFrame: exists")
-
-        -- Try to access the import dialog
-        local dialog = EditModeManagerFrame.importLayoutDialog
-        if dialog then
-            print("  importLayoutDialog: exists")
-
-            -- Try to set the import string and trigger import
-            local success, err = pcall(function()
-                -- Set the import string in the edit box
-                if dialog.editBox then
-                    dialog.editBox:SetText(self.layoutData)
-                end
-
-                -- Try to call the import function
-                if dialog.ImportLayout then
-                    dialog:ImportLayout()
-                elseif dialog.AcceptButton and dialog.AcceptButton:GetScript("OnClick") then
-                    dialog.AcceptButton:GetScript("OnClick")(dialog.AcceptButton)
-                end
-            end)
-
-            if success then
-                -- Check if layout actually exists now
-                C_Timer.After(0.5, function()
-                    if self:LayoutExists() then
-                        print("[DOC UI] Layout verified in Edit Mode!")
-                    else
-                        print("[DOC UI] WARNING: Import appeared to succeed but layout not found!")
-                    end
-                end)
-                return true, "Layout import attempted - checking..."
-            else
-                print("[DOC UI Debug] Import dialog method failed:", err)
-            end
-        else
-            print("  importLayoutDialog: nil")
+    -- First, try to ensure Edit Mode is initialized
+    if not EditModeManagerFrame:IsShown() then
+        print("[DOC UI] Edit Mode not open. Trying to open it first...")
+        -- Try to show Edit Mode
+        if EditModeManagerFrame.Show then
+            EditModeManagerFrame:Show()
         end
     end
 
-    -- Method 2: Check if C_EditMode has GetLayouts/SaveLayouts
-    -- This would require converting our import string to layout structure
-    if C_EditMode.GetLayouts and C_EditMode.SaveLayouts then
-        print("[DOC UI Debug] GetLayouts/SaveLayouts exist - but we need layout structure, not string")
-        -- TODO: Implement string-to-structure conversion
-        return false, "Import string format not supported. Use manual import."
+    print("[DOC UI] Attempting import via EditModeManagerFrame:ImportLayout()...")
+    print("[DOC UI] Import string length:", string.len(self.layoutData))
+
+    local success, result = pcall(function()
+        -- Call ImportLayout with our layout string
+        return EditModeManagerFrame:ImportLayout(self.layoutData)
+    end)
+
+    if not success then
+        print("[DOC UI] ERROR calling ImportLayout:", result)
+        return false, "Import failed: " .. tostring(result)
     end
 
-    -- If all methods fail
-    return false, "Automatic import not available. Please use manual copy-paste method."
+    print("[DOC UI] ImportLayout returned:", tostring(result))
+
+    -- Wait a moment for the import to process, then verify
+    C_Timer.After(1, function()
+        local data = C_EditMode.GetLayouts()
+        print("[DOC UI] Checking layouts after import...")
+        if data and data.layouts then
+            print("[DOC UI] Total layouts now:", #data.layouts)
+            for i, layout in ipairs(data.layouts) do
+                print(string.format("  %d: %s", i, layout.layoutName or "Unnamed"))
+            end
+        end
+
+        if self:LayoutExists() then
+            print("[DOC UI] SUCCESS: Layout 'DOC UI - DPS 1440p' found!")
+        else
+            print("[DOC UI] WARNING: Layout still not found!")
+            print("[DOC UI] ImportLayout may require manual confirmation or doesn't work with strings.")
+            print("[DOC UI] Please use the Manual Import method instead.")
+        end
+    end)
+
+    return true, "Import attempted. Check chat for results in 1 second..."
 end
 
 -- Helper function to check if our layout already exists

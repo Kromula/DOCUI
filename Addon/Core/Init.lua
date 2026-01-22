@@ -45,6 +45,8 @@ eventFrame:SetScript("OnEvent", function(self, event, arg1)
         SlashCmdList["DOCUI"] = function(msg)
             if msg == "debug" then
                 DOCUI:DebugEditMode()
+            elseif msg == "testimport" then
+                DOCUI:TestImport()
             else
                 DOCUI:OpenInstaller()
             end
@@ -131,4 +133,85 @@ function DOCUI:DebugEditMode()
     end
 
     print("\n=== End Debug ===")
+end
+
+-- Test import function
+function DOCUI:TestImport()
+    if not DOCUI.Profiles or not DOCUI.Profiles.BlizzardEditMode then
+        print("ERROR: BlizzardEditMode profile not loaded")
+        return
+    end
+
+    print("=== Testing Import ===")
+    local success, message = DOCUI.Profiles.BlizzardEditMode:Import()
+    print("Result:", success and "SUCCESS" or "FAILED")
+    print("Message:", message)
+end
+
+-- Extract layout structure after manual import
+function DOCUI:ExtractLayout(layoutName)
+    if not C_EditMode or not C_EditMode.GetLayouts then
+        print("ERROR: C_EditMode.GetLayouts not available")
+        return
+    end
+
+    local data = C_EditMode.GetLayouts()
+    if not data or not data.layouts then
+        print("ERROR: No layouts found")
+        return
+    end
+
+    -- Find the layout by name
+    for i, layout in ipairs(data.layouts) do
+        if layout.layoutName == layoutName then
+            print("=== Found Layout: " .. layoutName .. " ===")
+            print("Index:", i)
+            print("Type:", layout.layoutType)
+            print("Systems:", layout.systems and #layout.systems or 0)
+
+            -- Print the layout structure (this is what we need for programmatic import)
+            print("\n--- Layout Structure ---")
+            print("Copy this into your addon code:")
+            print("\n```lua")
+            print("local layout = " .. DOCUI:TableToString(layout, 1))
+            print("```")
+
+            return layout
+        end
+    end
+
+    print("ERROR: Layout '" .. layoutName .. "' not found")
+    print("Available layouts:")
+    for i, layout in ipairs(data.layouts) do
+        print("  " .. i .. ": " .. (layout.layoutName or "Unnamed"))
+    end
+end
+
+-- Helper to convert table to string for debugging
+function DOCUI:TableToString(tbl, indent)
+    if type(tbl) ~= "table" then
+        if type(tbl) == "string" then
+            return string.format("%q", tbl)
+        else
+            return tostring(tbl)
+        end
+    end
+
+    local result = "{\n"
+    indent = indent or 1
+    local indentStr = string.rep("  ", indent)
+
+    for k, v in pairs(tbl) do
+        result = result .. indentStr
+        if type(k) == "number" then
+            result = result .. "[" .. k .. "] = "
+        else
+            result = result .. k .. " = "
+        end
+
+        result = result .. DOCUI:TableToString(v, indent + 1) .. ",\n"
+    end
+
+    result = result .. string.rep("  ", indent - 1) .. "}"
+    return result
 end
