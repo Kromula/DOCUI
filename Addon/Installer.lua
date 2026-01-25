@@ -72,7 +72,11 @@ local function LayoutOptionButtons()
         installerFrame.Option1,
         installerFrame.Option2,
         installerFrame.Option3,
-        installerFrame.Option4
+        installerFrame.Option4,
+        installerFrame.Option5,
+        installerFrame.Option6,
+        installerFrame.Option7,
+        installerFrame.Option8
     }
 
     for _, option in ipairs(options) do
@@ -86,14 +90,48 @@ local function LayoutOptionButtons()
 
     local spacing = 8
     local buttonWidth = 160
-    local totalWidth = (numButtons * buttonWidth) + ((numButtons - 1) * spacing)
-    local startX = -(totalWidth / 2) + (buttonWidth / 2)
+    local buttonHeight = 32
+    local rowSpacing = 8
+    local maxButtonsPerRow = 3
 
-    for i = 1, numButtons do
-        local button = visibleButtons[i]
-        button:ClearAllPoints()
-        local offsetX = startX + ((i - 1) * (buttonWidth + spacing))
-        button:SetPoint("BOTTOM", installerFrame, "BOTTOM", offsetX, 70)
+    -- Determine if we need multiple rows
+    if numButtons <= maxButtonsPerRow then
+        -- Single row layout
+        local totalWidth = (numButtons * buttonWidth) + ((numButtons - 1) * spacing)
+        local startX = -(totalWidth / 2) + (buttonWidth / 2)
+
+        for i = 1, numButtons do
+            local button = visibleButtons[i]
+            button:ClearAllPoints()
+            local offsetX = startX + ((i - 1) * (buttonWidth + spacing))
+            button:SetPoint("BOTTOM", installerFrame, "BOTTOM", offsetX, 70)
+        end
+    else
+        -- Two row layout
+        local row1Count = math.ceil(numButtons / 2)
+        local row2Count = numButtons - row1Count
+
+        -- Position first row
+        local row1Width = (row1Count * buttonWidth) + ((row1Count - 1) * spacing)
+        local row1StartX = -(row1Width / 2) + (buttonWidth / 2)
+
+        for i = 1, row1Count do
+            local button = visibleButtons[i]
+            button:ClearAllPoints()
+            local offsetX = row1StartX + ((i - 1) * (buttonWidth + spacing))
+            button:SetPoint("BOTTOM", installerFrame, "BOTTOM", offsetX, 70 + buttonHeight + rowSpacing)
+        end
+
+        -- Position second row
+        local row2Width = (row2Count * buttonWidth) + ((row2Count - 1) * spacing)
+        local row2StartX = -(row2Width / 2) + (buttonWidth / 2)
+
+        for i = 1, row2Count do
+            local button = visibleButtons[row1Count + i]
+            button:ClearAllPoints()
+            local offsetX = row2StartX + ((i - 1) * (buttonWidth + spacing))
+            button:SetPoint("BOTTOM", installerFrame, "BOTTOM", offsetX, 70)
+        end
     end
 end
 
@@ -106,7 +144,11 @@ local function ResetPage()
         installerFrame.Option1,
         installerFrame.Option2,
         installerFrame.Option3,
-        installerFrame.Option4
+        installerFrame.Option4,
+        installerFrame.Option5,
+        installerFrame.Option6,
+        installerFrame.Option7,
+        installerFrame.Option8
     }
 
     for _, option in ipairs(options) do
@@ -115,6 +157,14 @@ local function ResetPage()
         option:SetText("")
         option:ClearAllPoints()
         option:SetSize(160, 32)
+
+        -- Reset button colors to default
+        if option.bg then
+            option.bg:SetColorTexture(0.15, 0.15, 0.15, 0.9)
+        end
+        if option.text then
+            option.text:SetTextColor(1, 1, 1)
+        end
     end
 
     installerFrame.SubTitle:SetText("")
@@ -277,8 +327,8 @@ local function CreateMainFrame()
     frame.Desc3:SetJustifyH("CENTER")
     frame.Desc3:SetSpacing(3)
 
-    -- Option buttons (1-4)
-    for i = 1, 4 do
+    -- Option buttons (1-8)
+    for i = 1, 8 do
         local button = CreateFrame("Button", "DOCUI_InstallerOption"..i, frame)
         button:SetSize(160, 32)
         button:Hide()
@@ -515,8 +565,14 @@ local function BuildInstallerData()
         local f = installerFrame
 
         -- If automatic import succeeded, skip this page
-        if not DOCUI.EditModeManualImport then
+        if not DOCUI.EditModeManualImport and not DOCUI.EditModeString then
             DOCUI.Installer:NextPage()
+            return
+        end
+
+        -- If we have no string to show (user went backward without choosing manual), go back
+        if not DOCUI.EditModeString then
+            DOCUI.Installer:PreviousPage()
             return
         end
 
@@ -736,7 +792,7 @@ local function BuildInstallerData()
             local numLayouts = #layouts
 
             -- Show buttons for each layout
-            for i = 1, math.min(numLayouts, 4) do
+            for i = 1, math.min(numLayouts, 8) do
                 local layout = layouts[i]
                 local button = f["Option"..i]
 
