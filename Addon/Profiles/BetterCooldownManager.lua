@@ -16,19 +16,14 @@ function DOCUI.Profiles.BetterCooldownManager:Import()
         return false, "Better Cooldown Manager is not installed or enabled."
     end
 
-    -- Check if BCDMG global exists (BCDM is local, BCDMG is global)
-    if not _G.BCDMG or not _G.BCDMG.ImportBCDM then
-        return false, "BCDMG interface not found. Try /reload first."
-    end
-
     print("[DOC UI] Import String Length:", string.len(self.importString))
     print("[DOC UI] First 20 chars:", self.importString:sub(1, 20))
     print("[DOC UI] Profile Name:", self.profileName)
 
     -- Import the profile using BCDMG's import function
-    local success, err = pcall(function()
-        _G.BCDMG:ImportBCDM(self.importString, self.profileName)
-    end)
+        for key, value in pairs(profileData.BetterCooldownManagerProfile) do
+            _G.BCDMDB[key] = value
+        end
 
     if not success then
         print("[DOC UI] Error:", err)
