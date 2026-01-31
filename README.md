@@ -27,7 +27,7 @@ Additional profiles and features from my UI will be added in the coming weeks.
 ### Masque
 This is now confirmed working (although some more testing might return some issues)
 
-Addons required
+Addons required  
 • Masque - https://www.curseforge.com/wow/addons/masque  
 • Masque Blizz Bars - https://www.curseforge.com/wow/addons/masque-blizz-bars-revived  
 • Masque: Renaitre - Download from Repository in Github with updated TOC for prepatch  
