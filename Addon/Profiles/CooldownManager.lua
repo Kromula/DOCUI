@@ -13,6 +13,12 @@ DOCUI.Profiles.CooldownManager.layouts = {
         importString = [[1|Fc49L0NxGIbxkia+gDxx/Q09X6AGVHN6pEGtSGciqaNpYpAw1uuRBqkv0HRjNmkTwcBksJzOFtqkwdpNLZ5n+d33eNWSp9cTxeisEcAnDKn/cpWCP+jiasQ7yBKSQ2aRGaRAJ4HMI3P0LpE8skBvk/oQCZAM4hO/I9NIls6qS4yEA1yI29b7kVS2Ytyrrv9oPCm5caOpBCklP6acPxsvyt290qoaB8ahcWQcGyfGrdJOG1PGurGhPHwZ38aP8tZncu9mNNIw78KSrTRjpdar+X5UXF4reGlvcT8s7Za9lVKl/A8=]]
     },
     {
+        class = "DEMONHUNTER",
+        spec = "Devourer",
+        displayName = "Devourer Demon Hunter",
+        importString = [[1|Hc45DgFxFIDxsbSW0kgkE71KnGCmUdEoiUSmZBh7NEYkKCiIRHSjtFzAlswtSFzA2riA/6f5ve81L6/v7dqhjtVbxMOSK7qSHY+Y+absSLLjIgcwCktu7UYNwYAyVMCEKtSgzqUlVYQS2ILCHR7whBe84SMY7+EARzjBGS5wha9g4gM/BCAIKmQhBy1oC+YREKt7NoeEYLqGDWxhZyvW/20rrekNo27qphJTtJSaSf4A]]
+    },
+    {
         class = "DRUID",
         spec = "Balance",
         displayName = "Balance Druid",
