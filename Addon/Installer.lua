@@ -674,7 +674,7 @@ local function BuildInstallerData()
         end)
         f.Option2:SetText("Skip UUF")
     end
-    stepTitles[pageIndex] = "UnitFrames"
+    stepTitles[pageIndex] = "Unhalted Uniframes"
     pageIndex = pageIndex + 1
 
     -- Page 5: Better Cooldown Manager
@@ -722,7 +722,7 @@ local function BuildInstallerData()
         end)
         f.Option2:SetText("Skip BCDM")
     end
-    stepTitles[pageIndex] = "Cooldown Manager"
+    stepTitles[pageIndex] = "Better Cooldown Manager"
     pageIndex = pageIndex + 1
 
     -- Page 6: Platynator
