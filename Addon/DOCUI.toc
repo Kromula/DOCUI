@@ -12,6 +12,7 @@ Profiles\UnhaltedUnitFrames.lua
 Profiles\BetterCooldownManager.lua
 Profiles\CooldownManager.lua
 Profiles\Platynator.lua
+Profiles\RaidFrameSettings.lua
 
 # Core initialization
 Core\Init.lua

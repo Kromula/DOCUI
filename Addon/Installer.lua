@@ -773,7 +773,50 @@ local function BuildInstallerData()
     stepTitles[pageIndex] = "Platynator"
     pageIndex = pageIndex + 1
 
-    -- Page 7: Cooldown Manager Layouts
+    -- Page 7: Raid Frame Settings
+    pages[pageIndex] = function()
+        local f = installerFrame
+
+        f.SubTitle:SetText("Raid Frame Settings")
+        f.Desc1:SetText("DOC UI includes a complete profile for Raid Frame Settings.")
+        f.Desc2:SetText("This will import the 'DOC UI' profile into your Raid Frame Settings addon.")
+        f.Desc3:SetText("Click 'Import Profile' to install, or 'Skip' to continue without RFS.")
+
+        f.Option1:Show()
+        f.Option1:SetScript("OnClick", function()
+            if DOCUI.Profiles.RaidFrameSettings then
+                f.Option1:Disable()
+                f.Option1:SetText("Importing...")
+
+                local success, message = DOCUI.Profiles.RaidFrameSettings:Import()
+
+                f.Option1:Enable()
+                f.Option1:SetText("Import Profile")
+
+                if success then
+                    DOCUIDB.installedProfiles = DOCUIDB.installedProfiles or {}
+                    DOCUIDB.installedProfiles["Raid Frame Settings"] = {
+                        installed = true,
+                        date = date("%Y-%m-%d %H:%M:%S")
+                    }
+                    DOCUI.Installer:NextPage()
+                else
+                    f.Desc3:SetText("|cffff0000Error: " .. message .. "|r")
+                end
+            end
+        end)
+        f.Option1:SetText("Import Profile")
+
+        f.Option2:Show()
+        f.Option2:SetScript("OnClick", function()
+            DOCUI.Installer:NextPage()
+        end)
+        f.Option2:SetText("Skip RFS")
+    end
+    stepTitles[pageIndex] = "Raid Frame Settings"
+    pageIndex = pageIndex + 1
+
+    -- Page 8: Cooldown Manager Layouts (was Page 7)
     pages[pageIndex] = function()
         local f = installerFrame
 
@@ -828,7 +871,7 @@ local function BuildInstallerData()
     stepTitles[pageIndex] = "Cooldown Manager Layouts"
     pageIndex = pageIndex + 1
 
-    -- Page 8: Cooldown Manager Import String
+    -- Page 9: Cooldown Manager Import String
     pages[pageIndex] = function()
         local f = installerFrame
         f.SubTitle:SetText("Import Cooldown Layout")
@@ -868,7 +911,7 @@ local function BuildInstallerData()
     stepTitles[pageIndex] = "Import Cooldown"
     pageIndex = pageIndex + 1
 
-    -- Page 9: Complete
+    -- Page 10: Complete
     pages[pageIndex] = function()
         local f = installerFrame
 
