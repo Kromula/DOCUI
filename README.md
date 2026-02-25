@@ -2,18 +2,18 @@
 
 My UI for World of Warcraft. Work as of pre-patch launch
 
-• Discord server for chat, feature requests and support
-• Focus on Raid and M+ performance and optimization
-• Simple installer
+• Discord server for chat, feature requests and support  
+• Focus on Raid and M+ performance and optimization  
+• Simple installer  
 
 
 ### Custom profiles
-• Unhalted Unit Frames 
-• BetterCoolDown Manager  
-• Platynator  
-• RaidFrameSettings
-• Blizzard UI layout
-• Spec specific Blizzard Cooldown Manager layouts
+• Unhalted Unit Frames   
+• BetterCoolDown Manager    
+• Platynator    
+• RaidFrameSettings  
+• Blizzard UI layout  
+• Spec specific Blizzard Cooldown Manager layouts  
 
 
 ### Twitch 
