@@ -35,5 +35,7 @@ Addons required
 
 In BCM go to Global and toggle off skinning. This will be added to installer shortly  
 
+<img width="2559" height="1439" alt="image" src="https://github.com/user-attachments/assets/015caf0b-70b7-49f5-b4a7-1e63f7292fe4" />
 <img width="2559" height="1439" alt="image" src="https://github.com/user-attachments/assets/3c043a35-dd54-420d-b84d-688a895eb868" />
+
 
