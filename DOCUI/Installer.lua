@@ -816,7 +816,120 @@ local function BuildInstallerData()
     stepTitles[pageIndex] = "Raid Frame Settings"
     pageIndex = pageIndex + 1
 
-    -- Page 8: Cooldown Manager Layouts (was Page 7)
+    -- Page 8: Details
+    pages[pageIndex] = function()
+        local f = installerFrame
+
+        f.SubTitle:SetText("Details! Damage Meter")
+        f.Desc1:SetText("DOC UI includes a profile for Details! Damage Meter.")
+        f.Desc2:SetText("This will import the 'DOCUI' profile into your Details addon.")
+        f.Desc3:SetText("Click 'Import Profile' to install, 'Manual Import' to copy the string, or 'Skip'.")
+
+        -- Auto import button
+        f.Option1:Show()
+        f.Option1:SetScript("OnClick", function()
+            if DOCUI.Profiles.Details then
+                f.Option1:Disable()
+                f.Option1:SetText("Importing...")
+
+                local success, message = DOCUI.Profiles.Details:Import()
+
+                f.Option1:Enable()
+                f.Option1:SetText("Import Profile")
+
+                if success then
+                    DOCUIDB.installedProfiles = DOCUIDB.installedProfiles or {}
+                    DOCUIDB.installedProfiles["Details"] = {
+                        installed = true,
+                        date = date("%Y-%m-%d %H:%M:%S")
+                    }
+                    DOCUI.Installer:NextPage()
+                elseif message == "MANUAL" then
+                    -- No API available - fall through to manual
+                    DOCUI.DetailsManualImport = true
+                    DOCUI.DetailsString = DOCUI.Profiles.Details.importString
+                    DOCUI.Installer:NextPage()
+                else
+                    f.Desc3:SetText("|cffff0000Error: " .. message .. "|r")
+                end
+            end
+        end)
+        f.Option1:SetText("Import Profile")
+
+        -- Manual import button
+        f.Option2:Show()
+        f.Option2:SetScript("OnClick", function()
+            DOCUI.DetailsManualImport = true
+            DOCUI.DetailsString = DOCUI.Profiles.Details.importString
+            DOCUI.Installer:NextPage()
+        end)
+        f.Option2:SetText("Manual Import")
+
+        -- Skip button
+        f.Option3:Show()
+        f.Option3:SetScript("OnClick", function()
+            DOCUI.DetailsManualImport = false
+            DOCUI.DetailsString = nil
+            DOCUI.Installer:NextPage()
+        end)
+        f.Option3:SetText("Skip Details")
+    end
+    stepTitles[pageIndex] = "Details"
+    pageIndex = pageIndex + 1
+
+    -- Page 9: Details Manual Import String
+    pages[pageIndex] = function()
+        local f = installerFrame
+
+        -- Skip this page if manual import was not requested
+        if not DOCUI.DetailsManualImport or not DOCUI.DetailsString then
+            DOCUI.Installer:NextPage()
+            return
+        end
+
+        f.SubTitle:SetText("Import Details Profile String")
+        f.Desc1:SetText("The Details profile string is ready! Follow these steps:")
+        f.Desc2:SetText("1. Click in the box below and press Ctrl+A, then Ctrl+C to copy\n2. Open Details settings\n3. Find Profiles → Import and paste (Ctrl+V)")
+
+        if not f.LayoutEditBox then
+            local editBoxFrame = CreateFrame("Frame", nil, f, "BackdropTemplate")
+            editBoxFrame:SetSize(500, 120)
+            editBoxFrame:SetPoint("CENTER", f, "CENTER", 0, -30)
+            ApplyBackdrop(editBoxFrame)
+
+            local scrollFrame = CreateFrame("ScrollFrame", nil, editBoxFrame, "UIPanelScrollFrameTemplate")
+            scrollFrame:SetPoint("TOPLEFT", 8, -8)
+            scrollFrame:SetPoint("BOTTOMRIGHT", -28, 8)
+
+            local editBox = CreateFrame("EditBox", nil, scrollFrame)
+            editBox:SetMultiLine(true)
+            editBox:SetFontObject(ChatFontNormal)
+            editBox:SetWidth(460)
+            editBox:SetAutoFocus(false)
+            editBox:SetScript("OnEscapePressed", function(self) self:ClearFocus() end)
+            scrollFrame:SetScrollChild(editBox)
+
+            f.LayoutEditBox = editBox
+            f.LayoutEditBoxFrame = editBoxFrame
+        end
+
+        f.LayoutEditBoxFrame:Show()
+        f.LayoutEditBox:SetText(DOCUI.DetailsString)
+        f.LayoutEditBox:HighlightText()
+
+        DOCUI.DetailsManualImport = false
+
+        DOCUIDB.installedProfiles = DOCUIDB.installedProfiles or {}
+        DOCUIDB.installedProfiles["Details"] = {
+            installed = true,
+            date = date("%Y-%m-%d %H:%M:%S"),
+            method = "manual"
+        }
+    end
+    stepTitles[pageIndex] = "Import Details"
+    pageIndex = pageIndex + 1
+
+    -- Page 10: Cooldown Manager Layouts
     pages[pageIndex] = function()
         local f = installerFrame
 
@@ -911,7 +1024,7 @@ local function BuildInstallerData()
     stepTitles[pageIndex] = "Import Cooldown"
     pageIndex = pageIndex + 1
 
-    -- Page 10: Complete
+    -- Page 12: Complete
     pages[pageIndex] = function()
         local f = installerFrame
 
