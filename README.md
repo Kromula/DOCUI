@@ -12,6 +12,7 @@ My UI for World of Warcraft. Work as of pre-patch launch
 • BetterCoolDown Manager    
 • Platynator    
 • RaidFrameSettings  
+• Details Damage Meter  
 • Blizzard UI layout  
 • Spec specific Blizzard Cooldown Manager layouts  
 
@@ -35,5 +36,6 @@ Addons required
 
 In BCM go to Global and toggle off skinning. This will be added to installer shortly  
 
-<img width="2559" height="1439" alt="image" src="https://github.com/user-attachments/assets/3c043a35-dd54-420d-b84d-688a895eb868" />
+<img width="2559" height="1439" alt="image" src="https://github.com/user-attachments/assets/67ce8752-7ec8-4106-bad9-9a6e933ccb12" />
+
 
