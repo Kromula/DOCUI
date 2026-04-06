@@ -10,7 +10,6 @@
 Profiles\BlizzardEditMode.lua
 Profiles\UnhaltedUnitFrames.lua
 Profiles\BetterCooldownManager.lua
-Profiles\CooldownManager.lua
 Profiles\Platynator.lua
 Profiles\RaidFrameSettings.lua
 Profiles\Details.lua
