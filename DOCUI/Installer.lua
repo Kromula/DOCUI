@@ -176,6 +176,11 @@ local function ResetPage()
     if installerFrame.CreditsFrame then
         installerFrame.CreditsFrame:Hide()
     end
+
+    -- Hide URL box if it exists
+    if installerFrame.CooldownUrlBoxFrame then
+        installerFrame.CooldownUrlBoxFrame:Hide()
+    end
 end
 
 -- Update progress bar
@@ -335,6 +340,14 @@ local function CreateMainFrame()
         StyleButton(button)
         frame["Option"..i] = button
     end
+
+    -- Close button (X)
+    frame.CloseBtn = CreateFrame("Button", "DOCUI_InstallerClose", frame)
+    frame.CloseBtn:SetSize(20, 20)
+    frame.CloseBtn:SetPoint("TOPRIGHT", -6, -6)
+    frame.CloseBtn:SetScript("OnClick", function() DOCUI.Installer:Hide() end)
+    StyleButton(frame.CloseBtn)
+    frame.CloseBtn:SetText("X")
 
     -- Previous button
     frame.Prev = CreateFrame("Button", "DOCUI_InstallerPrev", frame)
@@ -869,89 +882,33 @@ local function BuildInstallerData()
         end
 
         f.SubTitle:SetText("Cooldown Manager Layouts")
-        f.Desc1:SetText("DOC UI includes pre-configured layouts for Blizzard's Cooldown Manager.")
-        f.Desc2:SetText("These strings setup spells and abilities layouts. Select your spec below.")
-        f.Desc3:SetText("You'll need to manually import the string in Blizzard Cooldown Manager.")
+        f.Desc1:SetText("Spec specific cooldown layouts can be found at my Github:")
+        f.Desc3:SetText("These strings can be imported into the Blizzard Cooldown Manager panel.")
 
-        if DOCUI.Profiles.CooldownManager and DOCUI.Profiles.CooldownManager.layouts then
-            local layouts = DOCUI.Profiles.CooldownManager.layouts
-            local numLayouts = #layouts
+        -- Create URL edit box if it doesn't exist
+        if not f.CooldownUrlBox then
+            local urlBoxFrame = CreateFrame("Frame", nil, f, "BackdropTemplate")
+            urlBoxFrame:SetSize(500, 32)
+            urlBoxFrame:SetPoint("CENTER", f, "CENTER", 0, 20)
+            ApplyBackdrop(urlBoxFrame)
 
-            -- Show buttons for each layout
-            for i = 1, math.min(numLayouts, 8) do
-                local layout = layouts[i]
-                local button = f["Option"..i]
+            local urlBox = CreateFrame("EditBox", nil, urlBoxFrame)
+            urlBox:SetPoint("LEFT", 8, 0)
+            urlBox:SetPoint("RIGHT", -8, 0)
+            urlBox:SetHeight(32)
+            urlBox:SetFontObject(ChatFontNormal)
+            urlBox:SetAutoFocus(false)
+            urlBox:SetScript("OnEscapePressed", function(self) self:ClearFocus() end)
+            urlBox:SetScript("OnEditFocusGained", function(self) self:HighlightText() end)
 
-                button:Show()
-                button:SetText(layout.displayName)
-
-                -- Set class color
-                local r, g, b = DOCUI.Profiles.CooldownManager:GetClassColor(layout.class)
-                if button.bg then
-                    button.bg:SetColorTexture(r * 0.3, g * 0.3, b * 0.3, 0.9)
-                end
-                if button.text then
-                    button.text:SetTextColor(r, g, b)
-                end
-
-                button:SetScript("OnClick", function()
-                    -- Store the selected layout string
-                    DOCUI.CooldownString = layout.importString
-                    DOCUI.SelectedCooldownLayout = layout.displayName
-
-                    -- Record it as prepared
-                    DOCUIDB.installedProfiles = DOCUIDB.installedProfiles or {}
-                    DOCUIDB.installedProfiles["Cooldown Manager - " .. layout.displayName] = {
-                        installed = true,
-                        date = date("%Y-%m-%d %H:%M:%S")
-                    }
-
-                    DOCUI.Installer:NextPage()
-                end)
-            end
+            f.CooldownUrlBox = urlBox
+            f.CooldownUrlBoxFrame = urlBoxFrame
         end
+
+        f.CooldownUrlBox:SetText("https://github.com/Kromula/DOCUI/tree/main/Cooldown%20Layouts")
+        f.CooldownUrlBoxFrame:Show()
     end
     stepTitles[pageIndex] = "Cooldown Manager Layouts"
-    pageIndex = pageIndex + 1
-
-    -- Page 9: Cooldown Manager Import String
-    pages[pageIndex] = function()
-        local f = installerFrame
-        f.SubTitle:SetText("Import Cooldown Layout")
-        f.Desc1:SetText("The layout string for " .. (DOCUI.SelectedCooldownLayout or "your spec") .. " is ready!")
-        f.Desc2:SetText("1. Click in the box below and press Ctrl+A, then Ctrl+C to copy\n2. Open Blizzard Cooldown Manager settings\n3. Find the Import section and paste (Ctrl+V)")
-
-        -- Reuse the edit box
-        if not f.LayoutEditBox then
-            local editBoxFrame = CreateFrame("Frame", nil, f, "BackdropTemplate")
-            editBoxFrame:SetSize(500, 120)
-            editBoxFrame:SetPoint("CENTER", f, "CENTER", 0, -30)
-            ApplyBackdrop(editBoxFrame)
-
-            local scrollFrame = CreateFrame("ScrollFrame", nil, editBoxFrame, "UIPanelScrollFrameTemplate")
-            scrollFrame:SetPoint("TOPLEFT", 8, -8)
-            scrollFrame:SetPoint("BOTTOMRIGHT", -28, 8)
-
-            local editBox = CreateFrame("EditBox", nil, scrollFrame)
-            editBox:SetMultiLine(true)
-            editBox:SetFontObject(ChatFontNormal)
-            editBox:SetWidth(460)
-            editBox:SetAutoFocus(false)
-            editBox:SetScript("OnEscapePressed", function(self) self:ClearFocus() end)
-            scrollFrame:SetScrollChild(editBox)
-
-            f.LayoutEditBox = editBox
-            f.LayoutEditBoxFrame = editBoxFrame
-        end
-
-        f.LayoutEditBoxFrame:Show()
-
-        if DOCUI.CooldownString then
-            f.LayoutEditBox:SetText(DOCUI.CooldownString)
-            f.LayoutEditBox:HighlightText()
-        end
-    end
-    stepTitles[pageIndex] = "Import Cooldown"
     pageIndex = pageIndex + 1
 
     -- Page 12: Complete
