@@ -1,4 +1,4 @@
-## Interface: 120000, 120001
+## Interface: 120000, 120001, 120005
 ## Title: DOC UI
 ## Notes: Installer for DOC UI profiles - Blizzard Edit Mode, Unhalted UnitFrames, Better Cooldown Manager, Platynator & more
 ## Author: DOC
